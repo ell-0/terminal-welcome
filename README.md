@@ -1,6 +1,6 @@
 # terminal-welcome
 
-A minimal Mac terminal welcome dashboard. Braille portrait on the left, your name in figlet on the right, live weather, uptime, and a daily wish. No boxes. No emojis. No borders.
+A minimal Mac terminal welcome dashboard. Braille portrait on the left, your name in figlet on the right, live weather, uptime, and a daily wish.
 
 <br>
 
