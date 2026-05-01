@@ -117,6 +117,8 @@ process_photo() {
     photo_path="${photo_path#\'}" ; photo_path="${photo_path%\'}"
     photo_path="${photo_path#\"}" ; photo_path="${photo_path%\"}"
     photo_path="${photo_path# }"
+    # unescape backslash-escaped spaces (e.g. /My\ Photos/x.jpg → /My Photos/x.jpg)
+    photo_path="${photo_path//\\ / }"
 
     mkdir -p "$INSTALL_DIR"
 
