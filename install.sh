@@ -29,13 +29,13 @@ warn() { printf '%s %s\n'  "${RED}!${RESET}"      "$1"; }
 ask()  { printf '%s %s '   "${PINK}?${RESET}"     "$1"; }
 
 # ── color picker ──────────────────────────────────────────────────────────────
-# Prints the chosen ANSI code string to stdout (e.g. "38;5;218")
+# All display output goes to stderr; only the bare ANSI code reaches stdout.
+# This keeps $(color_pick ...) free of newlines so substitution stays clean.
 color_pick() {
     local label="$1"
-    printf '\n'
-    printf '  %s\n' "$label"
-    printf '    %s\n' "1) White   2) Pink   3) Cyan   4) Green   5) Custom ANSI"
-    ask "  Choose [1-5]:"
+    printf '\n  %s\n' "$label" >&2
+    printf '    %s\n' "1) White   2) Pink   3) Cyan   4) Green   5) Custom ANSI" >&2
+    printf '%s %s ' "${PINK}?${RESET}" "  Choose [1-5]:" >&2
     local choice
     read -r choice
     case "$choice" in
@@ -44,7 +44,8 @@ color_pick() {
         3) printf '%s' "96"        ;;
         4) printf '%s' "92"        ;;
         5)
-            ask "  Enter ANSI code (e.g. 33 = yellow, 38;5;208 = orange):"
+            printf '%s %s ' "${PINK}?${RESET}" \
+                "  Enter ANSI code (e.g. 33 = yellow, 38;5;208 = orange):" >&2
             local custom
             read -r custom
             printf '%s' "${custom:-97}"
@@ -137,13 +138,21 @@ process_photo() {
 install_script() {
     step "Installing dashboard to $INSTALL_DIR..."
 
-    sed \
-        -e "s|__YOUR_NAME__|${USER_NAME}|g"               \
-        -e "s|__YOUR_CITY__|${USER_CITY}|g"               \
-        -e "s|__TEMP_UNIT__|${USER_TEMP_UNIT}|g"          \
-        -e "s|__PORTRAIT_COLOR__|${USER_PORTRAIT_COLOR}|g" \
-        -e "s|__ACCENT_COLOR__|${USER_ACCENT_COLOR}|g"    \
-        "$SCRIPT_DIR/welcome.sh" > "$INSTALL_DIR/welcome.sh"
+    python3 -c "
+import sys
+t = open(sys.argv[1]).read()
+keys   = sys.argv[2::2]
+values = sys.argv[3::2]
+for k, v in zip(keys, values):
+    t = t.replace(k, v)
+sys.stdout.write(t)
+" "$SCRIPT_DIR/welcome.sh" \
+      '__YOUR_NAME__'      "$USER_NAME"            \
+      '__YOUR_CITY__'      "$USER_CITY"            \
+      '__TEMP_UNIT__'      "$USER_TEMP_UNIT"       \
+      '__PORTRAIT_COLOR__' "$USER_PORTRAIT_COLOR"  \
+      '__ACCENT_COLOR__'   "$USER_ACCENT_COLOR"    \
+      > "$INSTALL_DIR/welcome.sh"
 
     chmod +x "$INSTALL_DIR/welcome.sh"
     ok "welcome.sh installed"
