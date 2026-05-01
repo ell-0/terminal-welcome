@@ -158,6 +158,10 @@ sys.stdout.write(t)
 
     chmod +x "$INSTALL_DIR/welcome.sh"
     ok "welcome.sh installed"
+
+    # Copy installer itself so --change-photo / --uninstall work from INSTALL_DIR
+    cp "$SCRIPT_DIR/install.sh" "$INSTALL_DIR/install.sh"
+    chmod +x "$INSTALL_DIR/install.sh"
 }
 
 # ── add source line to shell rc ───────────────────────────────────────────────
