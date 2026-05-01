@@ -84,6 +84,22 @@ Run `brew install figlet` in your terminal, then open a new tab.
 
 Use a JPEG or PNG file. Very small images may not convert well — a portrait photo at least 400px wide gives the best result. You can swap your photo any time by running `bash ~/.config/terminal-welcome/install.sh --change-photo`.
 
+**I see the dashboard twice**
+
+Run this to find the duplicate line:
+
+```bash
+grep -n "welcome" ~/.zshrc
+```
+
+Then delete the duplicate (replace `9` with the line number you see twice):
+
+```bash
+sed -i '' '9d' ~/.zshrc
+```
+
+Open a new terminal tab — should show once now.
+
 <br>
 
 ---
