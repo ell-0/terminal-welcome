@@ -173,12 +173,73 @@ add_to_shell() {
     fi
 
     local source_line="source ~/.config/terminal-welcome/welcome.sh"
-    if grep -qF "$source_line" "$shell_rc" 2>/dev/null; then
-        ok "Already in $shell_rc — no changes needed"
+    # Check both rc files so a re-run never adds a duplicate
+    if grep -qF "$source_line" "$HOME/.zshrc" 2>/dev/null || \
+       grep -qF "$source_line" "$HOME/.bash_profile" 2>/dev/null; then
+        ok "Source line already present — skipping"
     else
         printf '\n# terminal-welcome\n%s\n' "$source_line" >> "$shell_rc"
         ok "Added source line to $shell_rc"
     fi
+}
+
+# ── uninstall ─────────────────────────────────────────────────────────────────
+cmd_uninstall() {
+    banner
+    warn "This will delete $INSTALL_DIR and remove the source line from your shell rc."
+    ask "Continue? [y/N]:"
+    local confirm; read -r confirm
+    [[ "$confirm" != [yY] ]] && { printf '\n  Aborted.\n\n'; exit 0; }
+    printf '\n'
+
+    step "Removing $INSTALL_DIR..."
+    rm -rf "$INSTALL_DIR"
+    ok "Removed $INSTALL_DIR"
+
+    local source_line="source ~/.config/terminal-welcome/welcome.sh"
+    for rc in "$HOME/.zshrc" "$HOME/.bash_profile"; do
+        [[ -f "$rc" ]] || continue
+        grep -qF "$source_line" "$rc" 2>/dev/null || continue
+        grep -v "^# terminal-welcome$" "$rc" \
+            | grep -vF "$source_line" > "${rc}.tmp" || true
+        mv "${rc}.tmp" "$rc"
+        ok "Removed source line from $rc"
+    done
+
+    printf '\n  %s\n\n' "${GREEN}${BOLD}Uninstalled.${RESET} Restart your terminal to finish."
+}
+
+# ── change photo ──────────────────────────────────────────────────────────────
+cmd_change_photo() {
+    banner
+    if [[ ! -d "$INSTALL_DIR" ]]; then
+        warn "terminal-welcome is not installed. Run ./install.sh first."
+        exit 1
+    fi
+
+    printf '  %s\n' "Drag & drop a new photo, or press ${WHITE}Enter${RESET} to cancel."
+    ask "  Photo path:"
+    local photo_path; read -r photo_path
+
+    photo_path="${photo_path# }"
+    photo_path="${photo_path#\'}" ; photo_path="${photo_path%\'}"
+    photo_path="${photo_path#\"}" ; photo_path="${photo_path%\"}"
+    photo_path="${photo_path# }"
+    photo_path="${photo_path//\\ / }"
+
+    [[ -z "$photo_path" ]] && { printf '\n  Cancelled.\n\n'; exit 0; }
+
+    if [[ ! -f "$photo_path" ]]; then
+        warn "File not found: $photo_path"
+        exit 1
+    fi
+
+    step "Converting photo to braille ASCII art..."
+    ascii-image-converter "$photo_path" --braille -W 50 2>/dev/null \
+        | sed $'s/\033\\[[0-9;]*m//g' \
+        > "$INSTALL_DIR/ascii.txt"
+    ok "Portrait updated — open a new terminal tab to see it."
+    printf '\n'
 }
 
 # ── success ───────────────────────────────────────────────────────────────────
@@ -196,13 +257,19 @@ show_success() {
 
 # ── main ──────────────────────────────────────────────────────────────────────
 main() {
-    banner
-    check_deps
-    gather_info
-    process_photo
-    install_script
-    add_to_shell
-    show_success
+    case "${1:-}" in
+        --uninstall)    cmd_uninstall    ;;
+        --change-photo) cmd_change_photo ;;
+        *)
+            banner
+            check_deps
+            gather_info
+            process_photo
+            install_script
+            add_to_shell
+            show_success
+            ;;
+    esac
 }
 
-main
+main "$@"
