@@ -2,7 +2,7 @@
 
 Your name in big letters, your face in dots, live weather — every time you open a terminal.
 
-![terminal-welcome preview](https://raw.githubusercontent.com/ell-0/terminal-welcome/main/docs/wyg-prev-terminal.png)
+![terminal-welcome preview](https://raw.githubusercontent.com/ell-0/terminal-welcome/main/docs/preview-terminal.png)
 
 <br>
 
@@ -10,9 +10,12 @@ Your name in big letters, your face in dots, live weather — every time you ope
 
 Paste this into your terminal and press Enter:
 
+
 ```bash
 git clone https://github.com/ell-0/terminal-welcome.git && cd terminal-welcome && bash install.sh
 ```
+
+![what you get](https://raw.githubusercontent.com/ell-0/terminal-welcome/main/docs/wyg-prev-terminal.png)
 
 <br>
 
