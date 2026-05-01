@@ -69,15 +69,19 @@ Enter the code when the installer asks, or paste it into your config file next t
 ## Troubleshooting
 
 **The dashboard doesn't show up when I open a new tab**
+
 Close the terminal completely and reopen it. If it still doesn't appear, run `source ~/.zshrc` in your terminal and open a new tab.
 
 **Weather shows — instead of a temperature**
+
 Check your city name in the config file: `nano ~/.config/terminal-welcome/welcome.sh`. The city must match what [wttr.in](https://wttr.in) recognizes — try typing the city name there to check. Multi-word cities work fine (e.g. `New York`).
 
 **I see "figlet: command not found"**
+
 Run `brew install figlet` in your terminal, then open a new tab.
 
 **My photo didn't convert or looks blank**
+
 Use a JPEG or PNG file. Very small images may not convert well — a portrait photo at least 400px wide gives the best result. You can swap your photo any time by running `bash ~/.config/terminal-welcome/install.sh --change-photo`.
 
 <br>
