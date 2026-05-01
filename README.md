@@ -4,15 +4,14 @@ A minimal Mac terminal welcome dashboard. Braille portrait on the left, your nam
 
 <br>
 
-<!-- Replace with your own screenshot -->
-![terminal-welcome preview](https://raw.githubusercontent.com/yourusername/terminal-welcome/main/docs/preview.png)
+![terminal-welcome preview](https://raw.githubusercontent.com/ell-0/terminal-welcome/main/docs/ell-terminal-welcome.png)
 
 <br>
 
 ## Install
 
 ```bash
-git clone https://github.com/yourusername/terminal-welcome.git && cd terminal-welcome && bash install.sh
+git clone https://github.com/ell-0/terminal-welcome.git && cd terminal-welcome && bash install.sh
 ```
 
 The installer will guide you through everything. Takes about 2 minutes.
